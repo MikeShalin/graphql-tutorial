@@ -1,27 +1,29 @@
 const graphql = require('graphql');
 
-const { GraphQLObjectType, GrahpQlString, GraphQLSchema } = graphql
+const { GraphQLObjectType, GraphQLString, GraphQLSchema } = graphql;
 
 const MovieType = new GraphQLObjectType({
   name: 'Movie',
   fields: () => ({
-    id: GrahpQlString,
-    name: GrahpQlString,
-    genre: GrahpQlString,
+    id: { type: GraphQLString },
+    name: { type: GraphQLString },
+    genre: { type: GraphQLString },
   }),
 });
 
 const Query = new GraphQLObjectType({
   name: 'Query',
-  movie: {
-    type: MovieType,
-    args: { id: { type: GrahpQlString } },
-    resolve(parent, arg) {
+  fields: {
+    movie: {
+      type: MovieType,
+      args: { id: { type: GraphQLString } },
+      resolve(parent, args) {
 
+      },
     },
-  },
-})
+  }
+});
 
 module.exports = new GraphQLSchema({
   query: Query,
-})
+});
