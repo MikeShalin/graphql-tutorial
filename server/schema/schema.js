@@ -9,25 +9,27 @@ const {
   GraphQLList,
 } = graphql;
 
+const Movies = require('../models/movie');
+const Directors = require('../models/director');
 /*
 // All IDs set automatically by mLab
 // Don't forget to update after creation
 const directorsJson = [
-  { "name": "Quentin Tarantino", "age": 55 }, // 5d22d7061c9d440000859679
-  { "name": "Michael Radford", "age": 72 }, // 5d22d7521c9d44000085967a
-  { "name": "James McTeigue", "age": 51 }, // 5d22d7b71c9d44000085967b
-  { "name": "Guy Ritchie", "age": 50 }, // 5d22d7cc1c9d44000085967c
+  { "name": "Quentin Tarantino", "age": 55 }, // 5d2a9e2f1c9d4400008f604a
+  { "name": "Michael Radford", "age": 72 }, // 5d2a9e521c9d4400008f604b
+  { "name": "James McTeigue", "age": 51 }, // 5d2a9e6f1c9d4400008f604c
+  { "name": "Guy Ritchie", "age": 50 }, // 5d2a9e931c9d4400008f604d
 ];
 // directorId - it is ID from the directors collection
 const moviesJson = [
-  { "name": "Pulp Fiction", "genre": "Crime", "directorId": "5d22d7061c9d440000859679" },
-  { "name": "1984", "genre": "Sci-Fi", "directorId": "5d22d7521c9d44000085967a" },
-  { "name": "V for vendetta", "genre": "Sci-Fi-Triller", "directorId": "5d22d7b71c9d44000085967b" },
-  { "name": "Snatch", "genre": "Crime-Comedy", "directorId": "5d22d7cc1c9d44000085967c" },
+  { "name": "Pulp Fiction", "genre": "Crime", "directorId": "5d2a9e2f1c9d4400008f604a" },
+  { "name": "1984", "genre": "Sci-Fi", "directorId": "5d2a9e521c9d4400008f604b" },
+  { "name": "V for vendetta", "genre": "Sci-Fi-Triller", "directorId": "5d2a9e6f1c9d4400008f604c" },
+  { "name": "Snatch", "genre": "Crime-Comedy", "directorId": "5d2a9e931c9d4400008f604d" },
   { "name": "Reservoir Dogs", "genre": "Crime", "directorId": "5c84c9a3fb6fc0720131f9af" },
-  { "name": "The Hateful Eight", "genre": "Crime", "directorId": "5d22d7061c9d440000859679" },
-  { "name": "Inglourious Basterds", "genre": "Crime", "directorId": "5d22d7061c9d440000859679" },
-    { "name": "Lock, Stock and Two Smoking Barrels", "genre": "Crime-Comedy", "directorId": "5d22d7cc1c9d44000085967c" },
+  { "name": "The Hateful Eight", "genre": "Crime", "directorId": "5d2a9e2f1c9d4400008f604a" },
+  { "name": "Inglourious Basterds", "genre": "Crime", "directorId": "5d2a9e2f1c9d4400008f604a" },
+    { "name": "Lock, Stock and Two Smoking Barrels", "genre": "Crime-Comedy", "directorId": "5d2a9e931c9d4400008f604d" },
 ];
 const movies = [
   { id: '1', name: "Pulp Fiction", genre: "Crime", directorId: "1" },
@@ -55,8 +57,9 @@ const MovieType = new GraphQLObjectType({
     genre: { type: GraphQLString },
     director: {
       type: DirectorType,
-      resolve({ id }) {
+      resolve(parent, args) {
         // return directors.find(({ id: directorId }) => directorId === id);
+        return Directors.findById(parent.directorId);
       },
     },
   }),
@@ -70,8 +73,9 @@ const DirectorType = new GraphQLObjectType({
     age: { type: GraphQLInt },
     movie: {
       type: new GraphQLList(MovieType),
-      resolve({ id }) {
+      resolve(parent, args) {
         // return movies.filter(({ directorId }) => directorId === id)
+        return Movies.find({ directorId: parent.id });
       },
     },
   }),
@@ -83,27 +87,31 @@ const Query = new GraphQLObjectType({
     movie: {
       type: MovieType,
       args: { id: { type: GraphQLID } },
-      resolve(parent, { id }) {
+      resolve(parent, args) {
         // return movies.find(({ id: moviesId }) => moviesId === id);
+        return Movies.findById(args.id);
       },
     },
     director: {
       type: DirectorType,
       args: { id: { type: GraphQLID } },
-      resolve(parent, { id }) {
+      resolve(parent, args) {
         // return directors.find(({ id: directorsId }) => directorsId === id);
+        return Directors.findById(args.id)
       },
     },
     movies: {
       type: new GraphQLList(MovieType),
       resolve() {
         // return movies;
+        return Movies.find({});
       },
     },
     directors: {
       type: new GraphQLList(DirectorType),
       resolve() {
         // return directors;
+        return Directors.find({});
       },
     },
   },
