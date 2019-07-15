@@ -2,6 +2,7 @@ const express = require('express');
 const graphqlHTTP = require('express-graphql');
 const schema = require('./schema/schema');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
 const app = express();
 const PORT = 3005;
@@ -15,12 +16,16 @@ const CONNECTION_PARAMS = {
   useNewUrlParser: true,
 }
 
+
 mongoose.connect(`mongodb+srv://${USER}:${PASS}@${URI_DB}/${NAME_DB}`, CONNECTION_PARAMS);
+
+app.use(cors());
 
 app.use('/graphql', graphqlHTTP({
   schema,
   graphiql: true,
 }));
+
 
 const dbConnection = mongoose.connection;
 dbConnection.on('error', err => console.error('Connection error: ' + err))
