@@ -3,7 +3,7 @@ import { compose } from 'recompose';
 
 import { graphql } from 'react-apollo';
 
-import { addMovieMutation } from './mutations';
+import { addMovieMutation, updateMovieMutations } from './mutations';
 import { moviesQuery } from '../MoviesTable/queries';
 import { directorsQuery } from './queries';
 
@@ -18,4 +18,15 @@ const withGraphqlAdd = graphql(addMovieMutation,{
   })
 })
 
-export default compose(withStyles(styles), withGraphqlAdd, graphql(directorsQuery));
+const withGraphqlUpdate = graphql(updateMovieMutations, {
+    props: ({ mutate }) => ({
+      updateMovie: movie => mutate({
+        variables: movie,
+        refetchQueries: [{ query: moviesQuery }],
+      }),
+    }),
+  },
+)
+
+
+export default compose(withStyles(styles), withGraphqlAdd, withGraphqlUpdate, graphql(directorsQuery));

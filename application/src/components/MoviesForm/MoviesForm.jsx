@@ -20,10 +20,14 @@ class MoviesForm extends React.Component {
   };
 
   handleSave = () => {
-    const { selectedValue, onClose, addMovie } = this.props;
+    const { selectedValue, onClose, addMovie, updateMovie } = this.props;
     const { id, name, genre, rate, directorId, watched } = selectedValue;
     onClose();
-    addMovie({ id, name, genre, rate: Number(rate), directorId, watched: Boolean(watched) });
+    if (id) {
+      updateMovie({ id, name, genre, rate: Number(rate), directorId, watched: Boolean(watched) });
+      return false;
+    }
+    addMovie({ name, genre, rate: Number(rate), directorId, watched: Boolean(watched) });
   };
 
   render() {

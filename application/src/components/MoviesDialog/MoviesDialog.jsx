@@ -16,7 +16,6 @@ class MoviesDialog extends React.Component {
     const { id, handleClose, deleteMovie } = this.props;
     handleClose();
     deleteMovie(id);
-    console.log(id)
   }
 
   render() {
