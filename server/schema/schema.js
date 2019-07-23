@@ -163,6 +163,13 @@ const Query = new GraphQLObjectType({
         return Directors.find({});
       },
     },
+    filterMovies: {
+      type: new GraphQLList(MovieType),
+      args: { name: { type: GraphQLString } },
+      resolve(parent, { name }){
+        return Movies.find({ name: { $regex: '.*' + name + '.*' }  });
+      }
+    }
   },
 });
 

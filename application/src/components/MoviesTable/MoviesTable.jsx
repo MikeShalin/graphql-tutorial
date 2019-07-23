@@ -12,20 +12,22 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import DeleteIcon from '@material-ui/icons/Delete';
 import CreateIcon from '@material-ui/icons/Create';
+import { Query } from 'react-apollo';
+import map from 'lodash/map'
 
 import MoviesDialog from '../MoviesDialog/MoviesDialog';
 
 import withHocs from './MoviesTableHoc';
+import MoviesSearch from '../MoviesSearch/MoviesSearch'
 
-const movies = [
-  { id: 1, name: 'Pulp Fiction', genre: 'Crime', rate: 10, director: { name: 'Quentin Tarantino' }, watched: true },
-  { id: 2, name: 'Lock, Stock and Two Smoking Barrels', genre: 'Crime-comedy', rate: 9, director: { name: 'Guy Ritchie' }, watched: false },
-];
+import { filterMovies } from './queries'
 
 class MoviesTable extends React.Component {
   state = {
     anchorEl: null,
     openDialog: false,
+    movies: [],
+    searchString: '',
   };
 
   handleDialogOpen = () => { this.setState({ openDialog: true }); };
@@ -50,12 +52,13 @@ class MoviesTable extends React.Component {
     this.handleClose();
   };
 
+  setMovies = movies => { this.setState({ movies }); };
+
   render() {
     const { anchorEl, openDialog, data: activeElem = {} } = this.state;
 
-    const { classes, data = {} } = this.props;
+    const { classes } = this.props;
 
-    const { movies = [] } = data;
     return (
       <>
         <MoviesDialog open={openDialog} handleClose={this.handleDialogClose} id={activeElem.id} />
@@ -72,31 +75,40 @@ class MoviesTable extends React.Component {
               </TableRow>
             </TableHead>
             <TableBody>
-              {movies.map(movie => {
-                return (
-                  <TableRow key={movie.id}>
-                    <TableCell component="th" scope="row">{movie.name}</TableCell>
-                    <TableCell>{movie.genre}</TableCell>
-                    <TableCell align="right">{movie.rate}</TableCell>
-                    <TableCell>{movie.director.name}</TableCell>
-                    <TableCell>
-                      <Checkbox checked={movie.watched} disabled />
-                    </TableCell>
-                    <TableCell align="right">
-                      <>
-                        <IconButton color="inherit" onClick={(e) => this.handleClick(e, movie)}>
-                          <MoreIcon />
-                        </IconButton>
-                        <Menu id="simple-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={this.handleClose} >
-                          <MenuItem onClick={this.handleEdit}><CreateIcon /> Edit</MenuItem>
-                          <MenuItem onClick={this.handleDelete}><DeleteIcon/> Delete</MenuItem>
-                        </Menu>
-                      </>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+              <Query query={filterMovies} variables={{ name: this.state.searchString }}>
+                {({ loading, error, data }) => { //todo как везде получиться ли?
+                  if (loading) return 'Loading...';
+                  if (error) return `Error! ${error.message}`;
+                  return map(data.filterMovies, movie => {
+                      return (
+                        <TableRow key={movie.id}>
+                          <TableCell component="th" scope="row">{movie.name}</TableCell>
+                          <TableCell>{movie.genre}</TableCell>
+                          <TableCell align="right">{movie.rate}</TableCell>
+                          <TableCell>{movie.director.name}</TableCell>
+                          <TableCell>
+                            <Checkbox checked={movie.watched} disabled />
+                          </TableCell>
+                          <TableCell align="right">
+                            <>
+                              <IconButton color="inherit" onClick={(e) => this.handleClick(e, movie)}>
+                                <MoreIcon />
+                              </IconButton>
+                              <Menu id="simple-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={this.handleClose} >
+                                <MenuItem onClick={this.handleEdit}><CreateIcon /> Edit</MenuItem>
+                                <MenuItem onClick={this.handleDelete}><DeleteIcon/> Delete</MenuItem>
+                              </Menu>
+                            </>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    });
+                }}
+              </Query>
+
+
             </TableBody>
+            <MoviesSearch onChange={(e) => this.setState({ searchString: e.target.value })}/>
           </Table>
         </Paper>
       </>

@@ -7,8 +7,7 @@ import withHocs from './MoviesSearchHoc';
 class MoviesSearch extends React.Component {
 
   render() {
-    const { classes } = this.props;
-
+    const { classes, onChange } = this.props;
     return (
       <div className={classes.search}>
         <div className={classes.searchIcon}>
@@ -20,6 +19,7 @@ class MoviesSearch extends React.Component {
             root: classes.inputRoot,
             input: classes.inputInput,
           }}
+          onChange={onChange}
         />
       </div>
     );

@@ -14,3 +14,18 @@ export const moviesQuery = gql`
     }
   }
 `;
+
+export const filterMovies = gql`
+  query filterMovies($name: String) {
+    filterMovies(name: $name){
+      id
+      name
+      genre
+      watched
+      rate
+      director {
+        name
+      }
+    }
+  }  
+`
