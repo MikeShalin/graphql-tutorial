@@ -8,12 +8,19 @@ import SaveIcon from '@material-ui/icons/Save';
 import withHocs from './DirectorsFormHoc';
 
 class DirectorsForm extends React.Component {
-  handleClose = () => { this.props.onClose(); };
+  handleClose = () => {
+    this.props.onClose();
+  };
 
   handleSave = () => {
-    const { selectedValue, onClose, addDirector } = this.props;
+    const { selectedValue, onClose, addDirector, updateDirector } = this.props;
     const { id, name, age } = selectedValue;
-    addDirector({ name, age: Number(age)});
+    console.log('\n\n\nlolselectedValue', { id, name, age })
+    if (id) {
+      updateDirector({ name, age: Number(age), id });
+    } else {
+      addDirector({ name, age: Number(age) });
+    }
     onClose();
   };
 
@@ -22,8 +29,11 @@ class DirectorsForm extends React.Component {
     const { name, age } = selectedValue;
 
     return (
-      <Dialog onClose={this.handleClose} open={open} aria-labelledby="simple-dialog-title">
-        <DialogTitle className={classes.title} id="simple-dialog-title">Director information</DialogTitle>
+      <Dialog onClose={this.handleClose} open={open}
+              aria-labelledby="simple-dialog-title"
+      >
+        <DialogTitle className={classes.title} id="simple-dialog-title">Director
+          information</DialogTitle>
         <form className={classes.container} noValidate autoComplete="off">
           <TextField
             id="outlined-name"
@@ -45,7 +55,9 @@ class DirectorsForm extends React.Component {
             variant="outlined"
           />
           <div className={classes.wrapper}>
-            <Button onClick={this.handleSave} variant="contained" color="primary" className={classes.button}>
+            <Button onClick={this.handleSave} variant="contained"
+                    color="primary" className={classes.button}
+            >
               <SaveIcon /> Save
             </Button>
           </div>
@@ -55,4 +67,4 @@ class DirectorsForm extends React.Component {
   }
 };
 
-  export default withHocs(DirectorsForm);
+export default withHocs(DirectorsForm);
