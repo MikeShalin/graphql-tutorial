@@ -9,6 +9,7 @@ import CameraIcon from '@material-ui/icons/Camera';
 
 import Movies from '../Movies/Movies';
 import Directors from '../Directors/Directors';
+import LogoutButton from '../LogoutButton';
 
 import withHocs from './TabsHoc';
 
@@ -32,6 +33,9 @@ class SimpleTabs extends React.Component {
 
     return (
       <div className={classes.root}>
+        <div className="header">
+          <LogoutButton/>
+        </div>
         <AppBar position="static">
           <Tabs variant='fullWidth' value={value} onChange={this.handleChange}>
             <Tab label="Movies" icon={<CameraIcon />} />
